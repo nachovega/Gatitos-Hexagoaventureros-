@@ -1,0 +1,466 @@
+import random
+
+# Funciones para las tiradas aleatorias
+def roll_die(sides):
+    return random.randint(1, sides)
+
+def roll_table(roll, table):
+    for threshold, result in table.items():
+        if roll <= threshold:
+            return result
+    return "Desconocido"
+
+# Tablas de juego
+start_location_table = {
+    5: "Parque Central",
+    10: "Callejón",
+    15: "Patio de Escuela",
+    20: "Azotea de Edificio",
+    25: "Mercado",
+    30: "Parada de Autobús",
+    35: "Puente",
+    40: "Estación de Tren",
+    45: "Museo",
+    50: "Cine Abandonado",
+    55: "Biblioteca",
+    60: "Centro Comercial",
+    65: "Plaza del Pueblo",
+    70: "Jardín Botánico",
+    75: "Zoológico",
+    80: "Canal",
+    85: "Antigua Fábrica",
+    90: "Gimnasio",
+    95: "Cafetería"
+}
+
+weather_table = {
+    3: "Soleado, temperaturas suaves",
+    5: "Nublado, lluvia ligera",
+    6: "Lluvia intensa, riesgo de charcos",
+    7: "Ventoso",
+    8: "Mañana con niebla, despeja por la tarde",
+    9: "Tormenta eléctrica",
+    10: "Día cálido y soleado"
+}
+
+terrain_table = {
+    10: "Calle",
+    20: "Parque",
+    30: "Plaza",
+    40: "Edificios Altos",
+    50: "Barrio Residencial",
+    60: "Zonas divertidas por las que corretear",
+    70: "Puente",
+    80: "Canal",
+    90: "Centro Comercial",
+    100: "Especial"
+}
+
+# Continuidad del terreno
+continuity_terrain_table = {
+    "Calle": {
+        6: "Calle",
+        7: "Parque",
+        8: "Plaza",
+        9: "Barrio Residencial",
+        10: "Especial"
+    },
+    "Parque": {
+        6: "Parque",
+        7: "Calle",
+        8: "Plaza",
+        9: "Zonas divertidas por las que corretear",
+        10: "Especial"
+    },
+    "Plaza": {
+        6: "Plaza",
+        7: "Calle",
+        8: "Parque",
+        9: "Edificios Altos",
+        10: "Especial"
+    },
+    "Edificios Altos": {
+        6: "Edificios Altos",
+        7: "Plaza",
+        8: "Canal",
+        9: "Parque",
+        10: "Especial"
+    },
+    "Barrio Residencial": {
+        6: "Barrio Residencial",
+        7: "Calle",
+        8: "Canal",
+        9: "Centro Comercial",
+        10: "Especial"
+    },
+    "Zonas divertidas por las que corretear": {
+        6: "Zonas divertidas por las que corretear",
+        7: "Calle",
+        8: "Canal",
+        9: "Puente",
+        10: "Especial"
+    },
+    "Puente": {
+        6: "Puente",
+        7: "Parque",
+        8: "Calle",
+        9: "Zonas divertidas por las que corretear",
+        10: "Especial"
+    },
+    "Canal": {
+        6: "Canal",
+        7: "Parque",
+        8: "Calle",
+        9: "Zonas divertidas por las que corretear",
+        10: "Especial"
+    },
+    "Centro Comercial": {
+        6: "Centro Comercial",
+        7: "Calle",
+        8: "Parque",
+        9: "Plaza",
+        10: "Especial"
+    },
+    "Especial": {
+        2: "Calle",
+        3: "Parque",
+        4: "Plaza",
+        5: "Edificios Altos",
+        6: "Barrio Residencial",
+        7: "Zonas divertidas por las que corretear",
+        8: "Canal",
+        9: "Centro Comercial",
+        10: "Puente"
+    }
+}
+
+vegetation_table = {
+    10: "Escasa",
+    20: "Césped",
+    30: "Arbustos",
+    40: "Árboles",
+    50: "Jardines",
+    60: "Parques",
+    70: "Setos",
+    80: "Vegetación de Canal",
+    90: "Vegetación de Zonas divertidas",
+    100: "Especial"
+}
+
+# Continuidad de la vegetación
+continuity_vegetation_table = {
+    "Escasa": {
+        4: "Escasa",
+        7: "Césped",
+        9: "Arbustos",
+        10: "Especial"
+    },
+    "Césped": {
+        2: "Escasa",
+        6: "Césped",
+        9: "Arbustos",
+        10: "Especial"
+    },
+    "Arbustos": {
+        2: "Césped",
+        5: "Arbustos",
+        8: "Árboles",
+        9: "Setos",
+        10: "Especial"
+    },
+    "Árboles": {
+        2: "Arbustos",
+        6: "Árboles",
+        8: "Jardines",
+        9: "Setos",
+        10: "Especial"
+    },
+    "Jardines": {
+        2: "Arbustos",
+        6: "Jardines",
+        8: "Parques",
+        9: "Setos",
+        10: "Especial"
+    },
+    "Parques": {
+        1: "Árboles",
+        2: "Jardines",
+        6: "Parques",
+        9: "Setos",
+        10: "Especial"
+    },
+    "Setos": {
+        1: "Árboles",
+        2: "Jardines",
+        6: "Setos",
+        8: "Parques",
+        9: "Especial",
+        10: "Evento Extraordinario"
+    },
+    "Vegetación de Canal": {
+        2: "Setos",
+        6: "Vegetación de Canal",
+        8: "Césped",
+        9: "Especial",
+        10: "Evento Extraordinario"
+    },
+    "Vegetación de Zonas divertidas": {
+        2: "Escasa",
+        6: "Vegetación de Zonas divertidas",
+        8: "Césped",
+        9: "Especial",
+        10: "Evento Extraordinario"
+    },
+    "Especial": {
+        2: "Escasa",
+        3: "Césped",
+        4: "Arbustos",
+        5: "Árboles",
+        6: "Jardines",
+        7: "Parques",
+        8: "Setos",
+        9: "Vegetación de Canal",
+        10: "Evento Extraordinario"
+    }
+}
+
+# Tabla para la dirección de las zonas divertidas
+fun_zone_direction_table = {
+    1: "Norte",
+    2: "Noreste",
+    3: "Sureste",
+    4: "Sur",
+    5: "Suroeste",
+    6: "Noroeste"
+}
+
+# Tabla de continuidad de zonas divertidas
+continuity_fun_zone_table = {
+    6: "Continúan las zonas divertidas",
+    8: "Parque",
+    10: "Terminan las zonas divertidas"
+}
+
+encounter_type_table = {
+    4: "Amistoso",
+    7: "Neutro",
+    10: "Hostil"
+}
+
+friendly_encounter_table = {
+    1: "Otro Gato Aventurero que habla de comer queso",
+    2: "Perro Amistoso llamado Uli",
+    3: "Ave Charlatana que quiere viajar a Cancún",
+    4: "Ratón Sabio que habla latín",
+    5: "Anciano Gato que recuerda cuando las televisiones eran gordotas y se podía tomar encima",
+    6: "Niño Amable que regala gusanitos",
+    7: "Dueño de Tienda que regala jamón York",
+    8: "Artista Callejero que hacer música suave y bonita",
+    9: "Bombero buenorro",
+    10: "Vecino Amigable que da caricias",
+    11: "Señora que les lleva comida casera",
+    12: "Niña que les quiere acariciar con cariño",
+    13: "Payaso Callejero que huele rico",
+    14: "Estudiante que quiere jugar con pelotita brillante",
+    15: "Gato Músico con gafas de sol"
+}
+
+neutral_encounter_table = {
+    2: "Gato Desconfiado",
+    3: "Perro Curioso",
+    4: "Ave Silenciosa",
+    5: "Habitante del Barrio",
+    6: "Vendedor de Helados",
+    7: "Cartero",
+    8: "Policía",
+    9: "Vagabundo",
+    10: "Gato Solitario",
+    11: "Ciclista",
+    12: "Jardinero"
+}
+
+hostile_encounter_table = {
+    1: "Gato Matón que pude bolitas",
+    2: "Perro Enfurecido que habla muy alto",
+    3: "Cuervo Pillo que cuenta chistes malos",
+    4: "Pandilla de Gatos que les obligan a bailar reggaeton",
+    5: "Rata Traviesa que lanza mordiscos",
+    6: "Niño Travieso con tirachinas",
+    7: "Guardia de Seguridad que odia los gatos",
+    8: "Hombre que quiere meter miedo",
+    9: "Gato Sarnoso que quiere contagiar",
+    10: "Rata Grande que lanza grandes mordiscos",
+    11: "Perro Callejero con malas pulgas",
+    12: "Sonido Molesto"
+}
+
+night_encounter_table = {
+    70: "Encuentro Negativo - Alguien se aproxima para intentar robar o asustar (Negativo)",
+    100: "Encuentro Neutro - Algo se mueve en la noche, pero no es una amenaza (Neutro)"
+}
+
+# Funciones para manejar los encuentros
+def handle_encounter(encounter_type_roll):
+    encounter_type = roll_table(encounter_type_roll, encounter_type_table)
+    if encounter_type == "Amistoso":
+        specific_encounter = roll_table(roll_die(15), friendly_encounter_table)
+    elif encounter_type == "Neutro":
+        specific_encounter = roll_table(roll_die(12), neutral_encounter_table)
+    else:
+        specific_encounter = roll_table(roll_die(12), hostile_encounter_table)
+    print(f"Encuentro {encounter_type}: {specific_encounter}")
+
+# Función para realizar y mostrar tiradas en las tablas
+def perform_rolls(initial=False, terrain=None, vegetation=None, fun_zone=None, fun_zone_direction=None):
+    if initial:
+        # Tirada en la tabla de ubicación inicial
+        start_location_roll = roll_die(100)
+        start_location = roll_table(start_location_roll, start_location_table)
+        print(f"Ubicación inicial ({start_location_roll}): {start_location}")
+    
+    # Continuidad del terreno
+    terrain_roll = roll_die(10)
+    if terrain:
+        terrain = roll_table(terrain_roll, continuity_terrain_table[terrain])
+    else:
+        terrain = roll_table(terrain_roll, terrain_table)
+    print(f"Terreno ({terrain_roll}): {terrain}")
+    
+    # Continuidad de la vegetación
+    vegetation_roll = roll_die(10)
+    if vegetation:
+        vegetation = roll_table(vegetation_roll, continuity_vegetation_table[vegetation])
+    else:
+        vegetation = roll_table(vegetation_roll, vegetation_table)
+    print(f"Vegetación ({vegetation_roll}): {vegetation}")
+    
+    # Tirada en la tabla de clima
+    weather_roll = roll_die(10)
+    weather = roll_table(weather_roll, weather_table)
+    print(f"Clima ({weather_roll}): {weather}")
+    
+    # Determinar si hay un encuentro durante el día (50% de probabilidad)
+    if roll_die(10) <= 5:
+        encounter_type_roll = roll_die(10)
+        handle_encounter(encounter_type_roll)
+    
+    # Continuidad de zonas divertidas
+    if fun_zone:
+        fun_zone_roll = roll_die(10)
+        fun_zone_continuity = roll_table(fun_zone_roll, continuity_fun_zone_table)
+        print(f"Continuidad de la zona divertida ({fun_zone_roll}): {fun_zone_continuity}")
+        if fun_zone_continuity == "Continúan las zonas divertidas":
+            direction = fun_zone_direction  # Continúa en la misma dirección
+            direction_name = roll_table(direction, fun_zone_direction_table)
+            print(f"La zona divertida continúa hacia el {direction_name}")
+        elif fun_zone_continuity == "Terminan las zonas divertidas":
+            fun_zone = False
+            print("La zona divertida termina en este hexágono.")
+    else:
+        # Posibilidad de que se genere una zona divertida
+        if roll_die(10) > 7:  # 30% de probabilidad de zona divertida
+            fun_zone = True
+            direction_roll = roll_die(6)
+            direction = roll_table(direction_roll, fun_zone_direction_table)
+            print(f"Se genera una zona divertida que se extiende hacia el {direction}")
+            fun_zone_direction = direction_roll
+        else:
+            fun_zone_direction = None
+    
+    return terrain, vegetation, fun_zone, fun_zone_direction
+
+def perform_night_encounter():
+    # Determinar si hay un encuentro durante la noche (20% de probabilidad)
+    if roll_die(10) <= 2:
+        night_encounter_roll = roll_die(100)
+        night_encounter = roll_table(night_encounter_roll, night_encounter_table)
+        print(f"Encuentro nocturno ({night_encounter_roll}): {night_encounter}")
+    else:
+        print("Noche tranquila, sin incidentes.")
+
+# Función principal del juego
+def game_sequence():
+    print("Estas son las aventuras de dos gatitos. ¿Cómo se llaman los gatitos?")
+    cat1 = input("Nombre del primer gatito: ").strip()
+    cat2 = input("Nombre del segundo gatito: ").strip()
+    
+    print(f"Comenzando en el hexágono inicial con {cat1} y {cat2}.")
+    
+    start_choice = input("¿Es un hexágono inicial nuevo o continúas una partida existente? (nuevo/continuar): ").strip().lower()
+    if start_choice == 'continuar':
+        print("Selecciona el tipo de terreno actual:")
+        print("1: Calle")
+        print("2: Parque")
+        print("3: Plaza")
+        print("4: Edificios Altos")
+        print("5: Barrio Residencial")
+        print("6: Zonas divertidas por las que corretear")
+        print("7: Puente")
+        print("8: Canal")
+        print("9: Centro Comercial")
+        print("10: Especial")
+        terrain_choice = int(input("Introduce el número correspondiente: "))
+        terrain = roll_table(terrain_choice * 10, terrain_table)
+
+        print("Selecciona el tipo de vegetación actual:")
+        print("1: Escasa")
+        print("2: Césped")
+        print("3: Arbustos")
+        print("4: Árboles")
+        print("5: Jardines")
+        print("6: Parques")
+        print("7: Setos")
+        print("8: Vegetación de Canal")
+        print("9: Vegetación de Zonas divertidas")
+        print("10: Especial")
+        vegetation_choice = int(input("Introduce el número correspondiente: "))
+        vegetation = roll_table(vegetation_choice * 10, vegetation_table)
+
+        print("Selecciona el clima actual:")
+        print("1: Soleado, temperaturas suaves")
+        print("2: Nublado, lluvia ligera")
+        print("3: Lluvia intensa, riesgo de charcos")
+        print("4: Ventoso")
+        print("5: Mañana con niebla, despeja por la tarde")
+        print("6: Tormenta eléctrica")
+        print("7: Día cálido y soleado")
+        weather_choice = int(input("Introduce el número correspondiente: "))
+        weather = roll_table(weather_choice, weather_table)  # Adjusted to fit the range
+
+        fun_zone = input("¿Hay una zona divertida en el hexágono actual? (si/no): ").strip().lower() == 'si'
+        if fun_zone:
+            print("Selecciona la dirección de la zona divertida en el hexágono actual:")
+            print("1: Norte")
+            print("2: Noreste")
+            print("3: Sureste")
+            print("4: Sur")
+            print("5: Suroeste")
+            print("6: Noroeste")
+            fun_zone_direction = int(input("Introduce el número correspondiente: "))
+        else:
+            fun_zone_direction = None
+    else:
+        terrain, vegetation, fun_zone, fun_zone_direction = perform_rolls(initial=True)
+        perform_night_encounter()  # Añadir el encuentro nocturno en el primer hexágono
+    
+    while True:
+        direction = input(f"¿En qué dirección quieren continuar {cat1} y {cat2}? (1-Norte, 2-Noreste, 3-Sureste, 4-Sur, 5-Suroeste, 6-Noroeste): ").strip()
+        if direction not in ["1", "2", "3", "4", "5", "6"]:
+            print("Dirección no válida. Inténtalo de nuevo.")
+            continue
+
+        direction = int(direction)
+        
+        # Ajustar la lógica para continuar correctamente con la zona divertida
+        if fun_zone and direction == fun_zone_direction:
+            print(f"Continúan correteando por las zonas divertidas hacia el {roll_table(fun_zone_direction, fun_zone_direction_table)}.")
+            terrain, vegetation, fun_zone, fun_zone_direction = perform_rolls(terrain=terrain, vegetation=vegetation, fun_zone=fun_zone, fun_zone_direction=fun_zone_direction)
+        else:
+            terrain, vegetation, fun_zone, fun_zone_direction = perform_rolls(terrain=terrain, vegetation=vegetation)
+        
+        perform_night_encounter()
+    
+    print("Fin de la secuencia del juego.")
+
+if __name__ == "__main__":
+    game_sequence()
